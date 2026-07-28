@@ -202,6 +202,8 @@ public sealed partial class Settings : IHasJsonCtx<Settings>, ISignalEmitter, IS
         set => Change(nameof(SmartFramerate), ref field, value);
     } = false;
 
+    public bool NonIntegerScaling { get; set; } = false;
+
     public bool MinifyClipboard { get; set; } = false;
 
 
@@ -239,7 +241,11 @@ public sealed partial class Settings : IHasJsonCtx<Settings>, ISignalEmitter, IS
 
     public bool MouseWrapping { get; set; } = false;
 
+    public bool EnableTouchpadPan { get; set; } = true;
+
     public float TouchpadPanSpeed { get; set; } = 100f;
+
+    public float PinchZoomSpeed { get; set; } = 100f;
 
     public bool PositionInProperties { get; set; } = false;
 

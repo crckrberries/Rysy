@@ -7,13 +7,23 @@ public class Camera : ISignalListener<ViewportChanged> {
     private XnaVector2 _pos;
     public XnaVector2 Pos => _pos;
 
+    private float _realScale = 1f;
+
     public float Scale {
-        get;
+        get {
+            if (Settings.Instance is { } settings && settings.NonIntegerScaling) {
+                return _realScale;
+            } else if (float.Round(_realScale) == 6f) {
+                return float.Round(_realScale);
+            } else {
+                return float.Pow(2, float.Round(float.Log2(_realScale)));
+            }
+        } 
         set {
-            field = value;
+            _realScale = value;
             RecalculateMatrix();
         }
-    } = 1f;
+    }
 
     private Viewport _viewport = RysyState.GraphicsDevice?.Viewport ?? new Viewport();
     public Viewport Viewport {
@@ -96,13 +106,17 @@ public class Camera : ISignalListener<ViewportChanged> {
     /// Zooms the camera in.
     /// </summary>
     public void ZoomIn(Input? input = null) {
-        var newScale = Scale switch { 
-            4f => 6f,
-            var other => (other * 2f).AtMost(512f)
-        };
+        // TODO: i don't really like hardcoding this but realistically the chances of it being a problem are near zero
+        // please do let me know if you can think of a better approach
+        var newScale = _realScale + input.Mouse.PinchZoom;
+        if (newScale == _realScale) {
+            newScale = Scale switch { 
+                4f => 6f,
+                var other => other * 2f
+            };
+        }
 
-        if (newScale > 1f)
-            newScale = newScale.Floor();
+        newScale = newScale.AtMost(512f);
 
         DoZoom(newScale, input);
     }
@@ -133,11 +147,16 @@ public class Camera : ISignalListener<ViewportChanged> {
     /// Zooms the camera out.
     /// </summary>
     public void ZoomOut(Input? input = null) {
-        var newScale = Scale switch {
-            8f => 6f,
-            6f => 4f,
-            var other => (other / 2f).AtLeast(1f / 4098f)
-        };
+        var newScale = _realScale + input.Mouse.PinchZoom;
+        if (newScale == _realScale) {
+            newScale = Scale switch { 
+                8f => 6f,
+                6f => 4f,
+                var other => other / 2f
+            };
+        }
+
+        newScale = newScale.AtLeast(1f / 4098f);
 
         DoZoom(newScale, input);
     }
@@ -219,9 +238,8 @@ public class Camera : ISignalListener<ViewportChanged> {
     }
 
     public void CreateCameraHotkeys(HotkeyHandler hotkeys) {
-        // Windows converts a pinch gesture to ctrl+scrollwheel, make sure this is supported.
-        hotkeys.AddHotkeyFromSettings("zoomIn", "scrollup|ctrl+scrollup", () => ZoomIn(hotkeys.Input));
-        hotkeys.AddHotkeyFromSettings("zoomOut", "scrolldown|ctrl+scrolldown", () => ZoomOut(hotkeys.Input));
+        hotkeys.AddHotkeyFromSettings("zoomIn", "scrollup|pinchin", () => ZoomIn(hotkeys.Input));
+        hotkeys.AddHotkeyFromSettings("zoomOut", "scrolldown|pinchout", () => ZoomOut(hotkeys.Input));
         hotkeys.AddHotkeyFromSettings("zoomRealScale", "", () => Zoom(6f));
     }
 

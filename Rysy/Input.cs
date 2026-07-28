@@ -47,6 +47,7 @@ public class Input {
         public Point PositionDelta { get; private set; }
         
         public Vector2 TouchpadPan { get; private set; }
+        public float PinchZoom { get; private set; }
 
         public float LeftHoldTime => _holdTimes[0];
         public float RightHoldTime => _holdTimes[1];
@@ -123,7 +124,9 @@ public class Input {
             WrappedThisFrame = false;
 
             TouchpadPan = RysyState.TouchpadPan;
+            PinchZoom = RysyState.PinchZoom;
             RysyState.TouchpadPan = default;
+            RysyState.PinchZoom = default;
             
             // From FNA wiki
             _mousePrevState = _mouseState;

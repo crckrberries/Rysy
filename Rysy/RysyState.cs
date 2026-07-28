@@ -242,6 +242,7 @@ public class RysyState : ISignalEmitter, ISignalListener<RunAtEndOfThisFrame> {
     }
 
     internal static Vector2 TouchpadPan;
+    internal static float PinchZoom;
 
     internal static readonly DateTime[] MouseDoubleClicks = new DateTime[8];
     internal static readonly Vector2[] LastMouseClickPoints = new Vector2[8];
@@ -272,6 +273,11 @@ public class RysyState : ISignalEmitter, ISignalListener<RunAtEndOfThisFrame> {
                         Instance.Scene?.OnFileDrop(pathString);
                         break;
                     }
+                    case SDL.SDL_EventType.SDL_EVENT_PINCH_UPDATE: {
+                        var sens = Settings.Instance?.PinchZoomSpeed / 100f ?? 1f;
+                        PinchZoom = (sdlEvent->pinch.scale - 1f) * sens;
+                        break;
+                    }
                     case SDL.SDL_EventType.SDL_EVENT_MOUSE_WHEEL: {
                         var wheel = sdlEvent->wheel;
                         
@@ -280,12 +286,16 @@ public class RysyState : ISignalEmitter, ISignalListener<RunAtEndOfThisFrame> {
                         // XNA does not expose horizontal mouse wheel.
                         // We'll use this event instead to store precise wheel state for later use
                         // in detecting touchpad panning, which Windows exposes as mouse wheel movement.
+                        if (Settings.Instance is { } settings && !settings.EnableTouchpadPan) 
+                            break;
+
                         if (!float.IsInteger(wheel.x)) {
                             TouchpadPan.X = wheel.x;
                         }
                         if (!float.IsInteger(wheel.y)) {
                             TouchpadPan.Y = wheel.y;
                         }
+
                         break;
                     }
                     case SDL.SDL_EventType.SDL_EVENT_MOUSE_BUTTON_DOWN: {

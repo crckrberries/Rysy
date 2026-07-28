@@ -29,6 +29,7 @@ public sealed class SmartFpsHandler : SceneComponent, ISignalListener<SettingsCh
         if (input.Mouse.PositionDelta == Point.Zero 
         && input.Mouse.ScrollDelta == 0 
         && input.Mouse.TouchpadPan == Vector2.Zero
+        && input.Mouse.PinchZoom == 0
         && !input.Keyboard.AnyKeyHeld 
         && !input.Mouse.AnyClickedOrHeld
         && !ImGuiManager.WantCaptureMouse) {

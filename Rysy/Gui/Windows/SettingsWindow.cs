@@ -80,6 +80,12 @@ public sealed class SettingsWindow : Window {
             Settings.Instance.Save();
         }
 
+        b = Settings.Instance.NonIntegerScaling;
+        if (ImGui.Checkbox("Non-Integer Scaling", ref b).WithTooltip("Enables non-integer zoom levels, making zooming smoother on touchpads at the cost of warped, messy pixels.")) {
+            Settings.Instance.NonIntegerScaling = b;
+            Settings.Instance.Save();
+        }
+
         b = Settings.Instance.ShowPlacementIcons;
         if (ImGui.Checkbox("Show Placement Icons", ref b).WithTooltip("Whether to show icons next to placements in the material list.")) {
             Settings.Instance.ShowPlacementIcons = b;
@@ -129,11 +135,23 @@ public sealed class SettingsWindow : Window {
             Settings.Instance.Save();
         }
 
+        ImGui.SeparatorText("rysy.settings.general.touchpad".Translate());
 
+        var panEnabled = Settings.Instance.EnableTouchpadPan;
+        if (ImGuiManager.TranslatedCheckbox("rysy.settings.general.enableTouchpadPan", ref panEnabled)) {
+            Settings.Instance.EnableTouchpadPan = panEnabled;
+            Settings.Instance.Save();
+        }
 
         var panSpeed = Settings.Instance.TouchpadPanSpeed;
         if (ImGuiManager.TranslatedInputFloat("rysy.settings.general.touchpadPanSpeed", ref panSpeed, step: 25f, "%g%%")) {
             Settings.Instance.TouchpadPanSpeed = panSpeed.SnapBetween(25f, 300f);
+            Settings.Instance.Save();
+        }
+
+        var pinchZoomSpeed = Settings.Instance.PinchZoomSpeed;
+        if (ImGuiManager.TranslatedInputFloat("rysy.settings.general.pinchZoomSpeed", ref pinchZoomSpeed, step: 25f, "%g%%")) {
+            Settings.Instance.PinchZoomSpeed = pinchZoomSpeed.SnapBetween(25f, 300f);
             Settings.Instance.Save();
         }
         

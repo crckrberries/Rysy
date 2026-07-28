@@ -22,6 +22,11 @@ public interface IMouseInput {
     /// </summary>
     Vector2 TouchpadPan { get; }
 
+    /// <summary>
+    /// Handles the two-finger touchpad pinching gesture. Positive means zooming in and negative means zooming out.
+    /// </summary>
+    float PinchZoom { get; }
+
     bool Clicked(int button);
     void Consume(int button);
     void ConsumeLeft();
