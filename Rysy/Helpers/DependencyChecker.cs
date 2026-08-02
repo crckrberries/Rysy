@@ -96,10 +96,10 @@ public static class DependencyChecker {
 
         foreach (var room in map.Rooms) {
             foreach (var item in room.Entities) {
-                HandleItem(item, CollectionsMarshal.AsSpan(EntityRegistry.GetAssociatedMods(item)));
+                HandleItem(item, EntityRegistry.GetAssociatedMods(item));
             }
             foreach (var item in room.Triggers) {
-                HandleItem(item, CollectionsMarshal.AsSpan(EntityRegistry.GetAssociatedMods(item)));
+                HandleItem(item, EntityRegistry.GetAssociatedMods(item));
             }
             foreach (Decal decal in room.BgDecals) {
                 HandleTexture(decal, decal.GetVirtTexture());
@@ -112,7 +112,7 @@ public static class DependencyChecker {
         foreach (var style in map.Style.AllStylesRecursive()) {
             var mods = EntityRegistry.GetAssociatedMods(style);
 
-            HandleItem(style, CollectionsMarshal.AsSpan(mods));
+            HandleItem(style, mods);
         }
 
         ctx.Mods = modNames;
@@ -130,7 +130,7 @@ public static class DependencyChecker {
             }
         }
 
-        void HandleItem(object item, ReadOnlySpan<string> mods) {
+        void HandleItem(object item, IReadOnlyList<string> mods) {
             foreach (var modName in mods) {
                 var mod = ModRegistry.GetModByName(modName);
                 if (mod?.IsVanilla ?? false)
@@ -180,7 +180,7 @@ internal class DependencyCheckerDrawable(
             ImGui.TableNextRow();
 
             ImGui.TableNextColumn();
-            ImGui.Text(obj.Room.Name);
+            ImGui.TextUnformatted(obj.Room.Name);
             ImGui.TableNextColumn();
 
             ImGuiManager.PushNullStyle();
@@ -219,7 +219,7 @@ internal class DependencyCheckerDrawable(
                     RenderEntityList(group);
                 }
                 if (group.Key.Type == typeof(DependencyChecker.MetadataDependency)) {
-                    ImGui.Text((group.First() as DependencyChecker.MetadataDependency)?.Value.ToString());
+                    ImGui.TextUnformatted((group.First() as DependencyChecker.MetadataDependency)?.Value.ToString());
                 }
 
                 ImGui.TreePop();

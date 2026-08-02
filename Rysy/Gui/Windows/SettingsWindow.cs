@@ -319,7 +319,7 @@ public sealed class SettingsWindow : Window {
         }
 
         if (mod is { }) {
-            ImGui.Text(mod.EverestYaml.First().ToString());
+            ImGui.TextUnformatted(mod.EverestYaml.First().ToString());
 
             if (ImGuiManager.TranslatedButton("rysy.settings.mods.editSettings")) {
                 RysyEngine.Scene.AddWindow(new ModSettingsWindow(mod));
@@ -415,7 +415,7 @@ public sealed class SettingsWindow : Window {
                 }
 
                 ImGui.Separator();
-                ImGui.Text("Profile Settings");
+                ImGui.TextUnformatted("Profile Settings");
 
                 ImGui.Checkbox("Show paths", ref ShowPaths);
 
